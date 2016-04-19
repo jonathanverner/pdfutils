@@ -17,7 +17,7 @@
 {% if a.HighlightedText | length > 0 %}
 {\bf Original text}\\
 {\ubuntuit 
-{{ a.HighlightedText }}
+{{ a.HighlightedText | toTeX }}
 }\\
 {% endif %}
 {% if a.Contents | length > 0 %}

@@ -8,7 +8,20 @@ import bisect
 import jinja2
 import json
 import os
+
+def toTeX(value):
+    repl={
+        '{':'\{',
+        '}':'\}',
+        '&':'\&'
+    }
+    ret = value
+    for (co,cim) in repl.items():
+        ret = ret.replace(co,cim)
+    return ret
+
 jinja_env=jinja2.Environment(extensions=['jinja2.ext.autoescape'])
+jinja_env.filters['toTeX']=toTeX
           
 def save_pdf(pdf_doc,filename):
     c = pdf_doc.pdfConverter()
