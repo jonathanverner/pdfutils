@@ -1,0 +1,32 @@
+\documentclass[10pt,a4paper]{amsart}
+\usepackage[margin=1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\RequirePackage[quiet]{fontspec}
+\newfontfamily\ubuntuit{Ubuntu Italic}
+\newenvironment{annot}
+{\vskip4mm\hline\vskip2mm}
+{}
+\begin{document}
+\parindent=0cm
+{% for page in pages %}
+{% if page.annots | length > 0 %}
+\section*{Page {{ page.number }} }
+{% for a in page.annots %}
+\begin{annot}
+{\bf Line {{ a.Line }}}: {{a.Type }} \hfill{\it {{ a.Author }} }\\
+{% if a.HighlightedText | length > 0 %}
+{\bf Original text}\\
+{\ubuntuit 
+{{ a.HighlightedText }}
+}\\
+{% endif %}
+{% if a.Contents | length > 0 %}
+{\bf Comment}\\
+{{ a.Contents }}
+{% endif %}
+\end{annot}
+{% endfor %}
+{% endif %}
+{% endfor %}
+\end{document}
