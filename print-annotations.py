@@ -64,7 +64,7 @@ def find_line(top, lines):
 
 def annot_to_line(page, annot, lines):
     top = annot.boundary().top()*page.pageSizeF().height()
-    return find_line(top,lines)
+    return find_line(top,lines)+1
 
     
 
