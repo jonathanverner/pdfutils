@@ -105,7 +105,7 @@ def page_to_list(page):
     annots = []
     for annot in page.annotations():
         annots.append(annot_to_dict(page,lines,annot))
-    return annots
+    return sorted(annots,key=lambda x:x['Line']),lines
         
 def load_template(tpl):
   base_name = tpl or '.annotations-summary-template.tex'
