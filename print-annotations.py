@@ -127,6 +127,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', type=argparse.FileType('w'),help='output file')
     parser.add_argument('--template',help='template to use for output', default=None)
     parser.add_argument('--json', help='output as JSON',action='store_true')
+    parser.add_argument('--includepdf', help='include the original pdf in the summary (needs the pdfpages package)', action='store_true')
     args = parser.parse_args()
     pdf = load_pdf(args.file)
 
@@ -134,16 +135,24 @@ if __name__ == "__main__":
     pages = []
     for pg_index in range(pdf.numPages()):
         page = pdf.page(pg_index)
+        annots,lines = page_to_list(page)
         pages.append({
             'number':pg_index+1,
-            'annots':page_to_list(page)
+            'annots':annots,
+            'lines':[(page.pageSizeF().height()-ln) * (1.0/72)*2.54 for ln in lines],
         })
     
     if args.json:
         output=json.dumps(pages)
     else:
         dtpl = jinja_env.from_string(load_template(args.template))
-        output = dtpl.render({'pages':pages})
+        output = dtpl.render({
+            'pages':pages,
+            'args':{
+                'includepdf':args.includepdf,
+                'input':args.file
+            }
+        })
         
     if args.output:
         args.output.write(output.encode('utf-8'))
