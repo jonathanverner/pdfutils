@@ -10,8 +10,10 @@
 \parindent=0cm
 {% for page in pages %}
 {% if page.annots | length > 0 %}
-\section*{Page {{ page.number }} }
-{% for a in page.annots %}
+{% for a in page.annots if not a.Type == 'Link' %}
+{% if loop.first %}
+    \section*{Page {{ page.number }} }
+{% endif %}
 \begin{annot}
 {\bf Line {{ a.Line }}}: {{a.Type }} \hfill{\it {{ a.Author }} }\\
 {% if a.HighlightedText | length > 0 %}
