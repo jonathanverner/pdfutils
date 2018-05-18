@@ -1,6 +1,10 @@
 \documentclass[10pt,a4paper]{amsart}
 \usepackage[margin=1cm]{geometry}
 \usepackage[T1]{fontenc}
+{% if args.includepdf %}
+\usepackage{tikz}
+\usepackage[final]{pdfpages}
+{% endif %}
 \RequirePackage[quiet]{fontspec}
 \newfontfamily\ubuntuit[Scale=0.8]{Droid Serif Italic}
 \newenvironment{annot}
@@ -9,6 +13,16 @@
 \begin{document}
 \parindent=0cm
 {% for page in pages %}
+{% if args.includepdf %}
+\includepdf[
+  pages={{loop.index}},
+  fitpaper,
+  picturecommand={
+    \begin{tikzpicture}[remember picture, overlay]
+    {% for line in page.lines %}\node at (10mm,{{(line-0.1)}}cm) { {\tt {{loop.index}}} };{% endfor %}
+    \end{tikzpicture}}
+]{{'{'}}{{ args.input }}{{'}'}}
+{% endif %}
 {% if page.annots | length > 0 %}
 {% for a in page.annots if not a.Type == 'Link' %}
 {% if loop.first %}
@@ -28,6 +42,9 @@
 {% endif %}
 \end{annot}
 {% endfor %}
+{% if args.includepdf %}
+\vfill\eject
+{% endif %}
 {% endif %}
 {% endfor %}
 \end{document}
