@@ -9,21 +9,20 @@ import jinja2
 import json
 import os
 
+
+
 def toTeX(value):
-    repl={
-        '{':'\{',
-        '}':'\}',
-        '&':'\&'
+    repl = {
+        '{': '\{',
+        '}': '\}',
+        '&': '\&'
     }
     ret = value
-    for (co,cim) in repl.items():
-        ret = ret.replace(co,cim)
+    for (co, cim) in repl.items():
+        ret = ret.replace(co, cim)
     return ret
 
-jinja_env=jinja2.Environment(extensions=['jinja2.ext.autoescape'])
-jinja_env.filters['toTeX']=toTeX
-          
-def save_pdf(pdf_doc,filename):
+def save_pdf(pdf_doc, filename):
     c = pdf_doc.pdfConverter()
     c.setOutputFileName(filename)
     c.setPDFOptions(c.WithChanges)
@@ -82,22 +81,27 @@ def print_annotations(page):
     lines = get_lines(page)
     for annot in page.annotations():
         if annot.subType() == popplerqt4.Poppler.Annotation.AHighlight:
-            print "Hilight:", get_hilighted_text(page,annot)
-            print "Hilight Type:", hType(annot)
-        print "Line:",annot_to_line(page,annot,lines)
-        print "Author:", unicode(annot.author())
-        print "Contents:", unicode(annot.contents())
+            print("Hilight:", get_hilighted_text(page, annot))
+            print("Hilight Type:", hType(annot))
+        print("Line:",annot_to_line(page,annot,lines))
+        print("Author:", unicode(annot.author()))
+        print("Contents:", unicode(annot.contents()))
 
 def annot_to_dict(page,lines,annot):
     ret =  {
         'Line':annot_to_line(page,annot,lines),
         'Author':unicode(annot.author()),
         'Contents':unicode(annot.contents()),
-        'Type':'Comment'
     }
     if annot.subType() == popplerqt4.Poppler.Annotation.AHighlight:
         ret['HighlightedText'] = get_hilighted_text(page,annot)
         ret['Type'] = hType(annot)
+    elif annot.subType() == popplerqt4.Poppler.Annotation.ALink:
+        ret['Type'] = 'Link'
+    elif annot.subType() == popplerqt4.Poppler.Annotation.AText:
+        ret['Type'] = 'Text'
+    else:
+        ret['Type'] = 'Other'
     return ret
 
 def page_to_list(page):
@@ -119,6 +123,8 @@ def load_template(tpl):
       pass
   return ''
         
+jinja_env = jinja2.Environment(extensions=['jinja2.ext.autoescape'])
+jinja_env.filters['toTeX']=toTeX
 
 
 if __name__ == "__main__":
@@ -148,7 +154,7 @@ if __name__ == "__main__":
     if args.output:
         args.output.write(output.encode('utf-8'))
     else:
-        print output.encode('utf-8')
+        print(output.encode('utf-8'))
         
         
     
